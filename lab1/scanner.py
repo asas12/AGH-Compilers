@@ -59,12 +59,9 @@ tokens = (
           'ID') + tuple(reserved.values())
 
 
-
-
 def t_COMMENT(t):
     r'\#.*'
     pass
-    # no returned value - discard
     # return t
 
 t_DOTADD = r'\.\+'
@@ -106,7 +103,7 @@ t_STRING = r'"[^"]*"'
 
 
 def t_FLOATNUM(t):
-    r'[0-9]+\.[0-9]*|[0-9]*\.[0-9]+'
+    r'([0-9]+\.[0-9]*|[0-9]*\.[0-9]+)([Ee][+-]?[0-9]*)?'
     t.value = float(t.value)
     return t
 
