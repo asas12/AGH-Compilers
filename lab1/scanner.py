@@ -99,8 +99,8 @@ t_TRANSPOSE = r'\''
 t_COMMA = r','
 t_COLON = r';'
 
-t_STRING = r'"[^"]*"'
-
+#t_STRING = r'"[^"]*"'
+t_STRING = r'"([^"](\\")?)*"'
 
 def t_FLOATNUM(t):
     r'([0-9]+\.[0-9]*|[0-9]*\.[0-9]+)([Ee][+-]?[0-9]*)?'
@@ -138,6 +138,4 @@ def find_column(input, token):
     line_start = input.rfind('\n', 0, token.lexpos) + 1
     return (token.lexpos - line_start) + 1
 
-
 lexer = lex.lex()
-
