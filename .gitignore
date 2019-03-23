@@ -9,3 +9,6 @@ ply-3.11/
 
 # archives
 *.tar
+
+# input test files
+*.txt
