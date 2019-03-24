@@ -1,9 +1,0 @@
- 3 A = 5 -= =
-A B
-B = (7+3)
-C = 4.5 + 3 == av # cementent
-if c == 3:5
-forget = elsewhere;
-else 3
-#commensdt
-#
