@@ -6,9 +6,12 @@ __pycache__/
 
 # PLY
 ply-3.11/
+parsetab.py
+*.out
 
 # archives
 *.tar
 
 # input test files
 *.txt
+*.m

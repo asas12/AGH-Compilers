@@ -1,17 +1,20 @@
 import ply.lex as lex
 
+import ply.yacc as yacc
+
+
 reserved = {
-    'if' : 'IF',
-    'else' : 'ELSE',
-    'for' : 'FOR',
-    'while' : 'WHILE',
-    'break' : 'BREAK',
-    'continue' : 'CONTINUE',
-    'return' : 'return',
-    'eye' : 'EYE',
-    'zeros' : 'ZEROS',
-    'ones' : 'ONES',
-    'print' : 'PRINT'
+    'if': 'IF',
+    'else': 'ELSE',
+    'for': 'FOR',
+    'while': 'WHILE',
+    'break': 'BREAK',
+    'continue': 'CONTINUE',
+    'return': 'RETURN',
+    'eye': 'EYE',
+    'zeros': 'ZEROS',
+    'ones': 'ONES',
+    'print': 'PRINT'
 }
 
 tokens = (
@@ -36,9 +39,12 @@ tokens = (
           'FLOATNUM',
           'INTNUM',
 
+          'TRANSPOSE',
 
           'STRING',
           'ID') + tuple(reserved.values())
+
+literals = r"+-*/(){}[]:<>=,;"
 
 
 def t_COMMENT(t):
@@ -46,6 +52,8 @@ def t_COMMENT(t):
     pass
     # return t
 
+
+t_TRANSPOSE = r'\''
 t_DOTADD = r'\.\+'
 t_DOTSUB = r'\.-'
 t_DOTMUL = r'\.\*'
@@ -90,7 +98,9 @@ def t_ID(t):
     return t
 
 
-literals = r"+-*/(){}[]:<>=,;'"
+
+#literals = ['+','-']#,'*','/','(',')','{','}','[',']','.',':','<','>','=',',',';','\'']
+
 
 t_ignore = '  \t'
 
@@ -105,9 +115,13 @@ def t_error(t) :
     t.lexer.skip(1)
 
 
-def find_column(input, token):
-    line_start = input.rfind('\n', 0, token.lexpos) + 1
+def find_column(text, token):
+    line_start = text.rfind('\n', 0, token.lexpos) + 1
     return (token.lexpos - line_start) + 1
 
 
+
 lexer = lex.lex()
+
+
+
