@@ -10,8 +10,9 @@ precedence = (
     ('nonassoc', 'IF_NELSE'),
     ('nonassoc', 'ELSE'),
     ('nonassoc', 'ID'),
+    ('nonassoc', 'PRINT'),
     ('left', '[', ']'),
-    ('left', '=', 'ADDASSIGN', 'DIVASSIGN', 'SUBASSIGN', 'MULASSIGN'),
+    ('right', '=', 'ADDASSIGN', 'DIVASSIGN', 'SUBASSIGN', 'MULASSIGN'),
     ('left', '<', '>', 'LESS_EQUAL','GREATER_EQUAL', 'NOT_EQUAL', 'EQUAL'),
     ('left', '+', '-', 'DOTADD', 'DOTSUB'),
     ('left', '*', '/', 'DOTMUL', 'DOTDIV'),
@@ -61,7 +62,7 @@ def p_instruction_if_else(p):
 
 
 def p_instruction_for(p):
-    """instruction : FOR ID '=' expression ':' expression instruction"""
+    """instruction : FOR id '=' expression ':' expression instruction"""
 
 
 def p_instruction_while(p):
@@ -81,20 +82,42 @@ def p_condition(p):
                  | expression '>' expression"""
 
 
+def p_numeric_expression(p):
+    """expression : int
+                  | float"""
+
+
 def p_expression_floatnum(p):
-    """ expression : FLOATNUM"""
+    """ float : FLOATNUM"""
 
 
 def p_expression_intnum(p):
-    """ expression : INTNUM """
+    """ int : INTNUM """
+
+
+def p_expression_lvalue(p):
+    """ expression : lvalue
+        lvalue : id
+               | id_arr"""
 
 
 def p_expression_id(p):
-    """ expression : ID """
+    """ id : ID """
 
 
 def p_expression_array_index(p):
-    """expression : ID '[' numbers ']' """
+    """id_arr : ID '[' int_numbers ']' """
+
+
+# contains int numbers and ids - used for indexing
+def p_int_numbers(p):
+    """ int_numbers : int_numbers ',' int_number
+                | int_number"""
+
+
+def p_number(p):
+    """int_number : id
+              | int"""
 
 
 def p_matrix_expression(p):
@@ -112,26 +135,29 @@ def p_matrices(p):
 
 
 def p_vectors(p):
-    """ vectors : vectors ';' numbers
-                | numbers"""
+    """ vectors : vectors ';' numerics
+                | numerics"""
 
 
-def p_numbers(p):
-    """ numbers : numbers ',' number
-                | number """
+def p_numerics(p):
+    """ numerics : numerics ',' int_number
+                | numerics ',' float
+                | int_number
+                | float"""
 
 
-def p_number(p):
-    """ number : ID
-               | FLOATNUM
-               | INTNUM"""
+#def p_numeric(p):
+#    """ numeric : id
+#               | float
+#               | int"""
 
 
+#tu jest shift reduce! dodanie ';' na końcu raz rozwiązało nie wiem czemu
 def p_expression_binary_operators(p):
     """ expression : expression '+' expression
                    | expression '-' expression
                    | expression '/' expression
-                   | expression '*' expression"""
+                   | expression '*' expression """
    # if p[2] == '+':
    #     p[0] = p[1] + p[3]
    # else:
@@ -153,11 +179,11 @@ def p_dot_operators(p):
 
 
 def p_assign(p):
-    """expression : expression '=' expression
-                  | expression ADDASSIGN expression
-                  | expression SUBASSIGN expression
-                  | expression MULASSIGN expression
-                  | expression DIVASSIGN expression"""
+    """instruction : lvalue '=' expression ';'
+                  | lvalue ADDASSIGN expression ';'
+                  | lvalue SUBASSIGN expression ';'
+                  | lvalue MULASSIGN expression ';'
+                  | lvalue DIVASSIGN expression ';'"""
 
 
 def p_transpose(p):
@@ -178,8 +204,7 @@ def p_functions(p):
                    | ONES '(' expression ')'
                    | EYE '(' expression ')'
                    | PRINT '(' expression ')'
-                   | PRINT STRING
-                   | PRINT numbers"""
+                   | PRINT expression"""
 
 
 def p_key_phrases(p):
