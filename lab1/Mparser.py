@@ -11,7 +11,6 @@ precedence = (
     ('nonassoc', 'ELSE'),
     ('nonassoc', 'ID'),
     ('nonassoc', 'PRINT'),
-    ('left', '[', ']'),
     ('right', '=', 'ADDASSIGN', 'DIVASSIGN', 'SUBASSIGN', 'MULASSIGN'),
     ('left', '<', '>', 'LESS_EQUAL','GREATER_EQUAL', 'NOT_EQUAL', 'EQUAL'),
     ('left', '+', '-', 'DOTADD', 'DOTSUB'),
@@ -49,8 +48,9 @@ def p_instructions_2(p):
     """instructions : instruction """
 
 
+# shift/reduce conflicts are resolved as shifts, which is correct
 def p_instruction_expression(p):
-    """instruction : expression ';' """
+    """instruction : instruction_simple ';' """
 
 
 def p_instruction_if(p):
@@ -73,6 +73,23 @@ def p_instruction_complex(p):
     """instruction : '{' instructions '}' """
 
 
+def p_assign(p):
+    """instruction_simple : lvalue '=' expression
+                  | lvalue ADDASSIGN expression
+                  | lvalue SUBASSIGN expression
+                  | lvalue MULASSIGN expression
+                  | lvalue DIVASSIGN expression """
+
+
+def p_key_phrases(p):
+    """ instruction_simple : BREAK
+                   | CONTINUE
+                   | COMMENT
+                   | RETURN expressions
+                   | PRINT '(' expressions ')'
+                   | PRINT expressions"""
+
+
 def p_condition(p):
     """condition : expression LESS_EQUAL expression
                  | expression GREATER_EQUAL expression
@@ -80,6 +97,11 @@ def p_condition(p):
                  | expression EQUAL expression
                  | expression '<' expression
                  | expression '>' expression"""
+
+
+def p_expressions(p):
+    """expressions : expressions ',' expression
+                   | expression"""
 
 
 def p_numeric_expression(p):
@@ -178,14 +200,6 @@ def p_dot_operators(p):
                   | expression DOTDIV expression"""
 
 
-def p_assign(p):
-    """instruction : lvalue '=' expression ';'
-                  | lvalue ADDASSIGN expression ';'
-                  | lvalue SUBASSIGN expression ';'
-                  | lvalue MULASSIGN expression ';'
-                  | lvalue DIVASSIGN expression ';'"""
-
-
 def p_transpose(p):
     """ expression : expression TRANSPOSE """
 
@@ -202,16 +216,7 @@ def p_string(p):
 def p_functions(p):
     """ expression : ZEROS '(' expression ')'
                    | ONES '(' expression ')'
-                   | EYE '(' expression ')'
-                   | PRINT '(' expression ')'
-                   | PRINT expression"""
-
-
-def p_key_phrases(p):
-    """ expression : BREAK
-                   | CONTINUE
-                   | COMMENT
-                   | RETURN expression"""
+                   | EYE '(' expression ')'"""
 
 
 parser = yacc.yacc()
