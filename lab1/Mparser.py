@@ -6,22 +6,24 @@ import ply.yacc as yacc
 tokens = scanner.tokens
 
 precedence = (
-    ('left', 'IF_NELSE'),
-    ('left', 'IF_ELSE'),
-    ('left', '=', 'ADDASSIGN', 'DIVASSIGN', 'SUBASSIGN', 'MULASSIGN',
-    'DOTADD', 'DOTSUB', 'DOTMUL', 'DOTDIV'),
+    ('nonassoc', 'RETURN'),
+    ('nonassoc', 'IF_NELSE'),
+    ('nonassoc', 'ELSE'),
+    ('nonassoc', 'ID'),
+    ('left', '[', ']'),
+    ('left', '=', 'ADDASSIGN', 'DIVASSIGN', 'SUBASSIGN', 'MULASSIGN'),
     ('left', '<', '>', 'LESS_EQUAL','GREATER_EQUAL', 'NOT_EQUAL', 'EQUAL'),
-    ('left', '+', '-'),
-    ('left', '*', '/'),
-    ('right', 'NEGATION'),
+    ('left', '+', '-', 'DOTADD', 'DOTSUB'),
+    ('left', '*', '/', 'DOTMUL', 'DOTDIV'),
+    ('right', 'UMINUS'),
     ('left', 'TRANSPOSE')
 )
 
 
 def p_error(p):
     if p:
-        #print("Syntax error at line {0}, column {1}: LexToken({2}, '{3}')".format(p.lineno, scanner.find_tok_column(p), p.type, p.value))
-        print("Syntax error at line {0}, column {1}: LexToken({2}, '{3}')".format(p.lineno, scanner.find_column(parser.text, p), p.type, p.value))
+        print("Syntax error at line {0}, column {1}: LexToken({2}, '{3}')"
+              .format(p.lineno, scanner.find_column(parser.text, p), p.type, p.value))
     else:
         print("Unexpected end of input")
 
@@ -55,7 +57,7 @@ def p_instruction_if(p):
 
 
 def p_instruction_if_else(p):
-    """instruction : IF '(' condition ')' instruction ELSE instruction %prec IF_ELSE"""
+    """instruction : IF '(' condition ')' instruction ELSE instruction"""
 
 
 def p_instruction_for(p):
@@ -82,37 +84,65 @@ def p_condition(p):
 def p_expression_floatnum(p):
     """ expression : FLOATNUM"""
 
+
 def p_expression_intnum(p):
     """ expression : INTNUM """
 
 
-def p_exression_id(p):
+def p_expression_id(p):
     """ expression : ID """
 
 
-#def p_matrix_expression(p):
-#    """expression : matrix"""
+def p_expression_array_index(p):
+    """expression : ID '[' numbers ']' """
 
 
-#def p_matrix(p):
-#   """ matrix : '[' matrix ']' """
+def p_matrix_expression(p):
+    """ expression : matrix"""
+
+
+def p_matrix(p):
+    """matrix : '['  matrices ']'
+                  | '[' vectors ']' """
+
+
+def p_matrices(p):
+    """ matrices :  matrix  ',' matrices
+                 | matrix """
+
+
+def p_vectors(p):
+    """ vectors : vectors ';' numbers
+                | numbers"""
+
+
+def p_numbers(p):
+    """ numbers : numbers ',' number
+                | number """
+
+
+def p_number(p):
+    """ number : ID
+               | FLOATNUM
+               | INTNUM"""
+
 
 def p_expression_binary_operators(p):
     """ expression : expression '+' expression
                    | expression '-' expression
                    | expression '/' expression
-                   | expression '*' expression """
-    if p[2] == '+':
-        p[0] = p[1] + p[3]
-    else:
-        if p[2] == '-':
-            p[0] = p[1] - p[3]
-        else:
-            if p[2] == '/':
-                p[0] = p[1] / p[3]
-            else:
-                if p[2] == '*':
-                    p[0] = p[1] * p[3]
+                   | expression '*' expression"""
+   # if p[2] == '+':
+   #     p[0] = p[1] + p[3]
+   # else:
+   #     if p[2] == '-':
+   #         p[0] = p[1] - p[3]
+   #     else:
+   #         if p[2] == '/':
+   #             p[0] = p[1] / p[3]
+   #         else:
+   #             if p[2] == '*':
+   #                 p[0] = p[1] * p[3]
 
 
 def p_dot_operators(p):
@@ -135,8 +165,8 @@ def p_transpose(p):
 
 
 def p_negation(p):
-    """ expression : '-' expression %prec NEGATION"""
-    p[0] = -p[2]
+    """expression : '-' expression %prec UMINUS"""
+    #p[0] = -p[1]
 
 
 def p_string(p):
@@ -147,7 +177,16 @@ def p_functions(p):
     """ expression : ZEROS '(' expression ')'
                    | ONES '(' expression ')'
                    | EYE '(' expression ')'
-                   | PRINT '(' expression ')'"""
+                   | PRINT '(' expression ')'
+                   | PRINT STRING
+                   | PRINT numbers"""
+
+
+def p_key_phrases(p):
+    """ expression : BREAK
+                   | CONTINUE
+                   | COMMENT
+                   | RETURN expression"""
 
 
 parser = yacc.yacc()
