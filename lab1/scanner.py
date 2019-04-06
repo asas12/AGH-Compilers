@@ -1,7 +1,5 @@
 import ply.lex as lex
 
-import ply.yacc as yacc
-
 
 reserved = {
     'if': 'IF',
@@ -71,12 +69,9 @@ t_NOT_EQUAL = '!='
 t_EQUAL = '=='
 
 
-#t_STRING = r'"[^"]*"'
-#t_STRING = r'"([^"]?(\\")?)*"'
 def t_STRING(t):
     r'"([^\\"]+|\\.)*"'
     t.value = t.value[1:-1]
-    #t.value = re.sub()
     return t
 
 
@@ -98,10 +93,6 @@ def t_ID(t):
     return t
 
 
-
-#literals = ['+','-']#,'*','/','(',')','{','}','[',']','.',':','<','>','=',',',';','\'']
-
-
 t_ignore = '  \t'
 
 
@@ -120,8 +111,4 @@ def find_column(text, token):
     return (token.lexpos - line_start) + 1
 
 
-
 lexer = lex.lex()
-
-
-
