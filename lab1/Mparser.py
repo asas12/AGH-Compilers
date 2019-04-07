@@ -31,38 +31,32 @@ def p_error(p):
 
 def p_program(p):
     """program : instructions_opt"""
-    #print("ins_opt")
     p[0] = AST.Node("program", [p[1]])
 
 
 def p_instructions_opt_1(p):
     """instructions_opt : instructions """
-    #print("inst_o_1")
     p[0] = AST.Node("instructions_opt", [p[1]])
 
 
 def p_instructions_opt_2(p):
     """instructions_opt : """
-    #print("inst_o_2")
     p[0] = AST.Node("instructions_opt_none")
 
 
 def p_instructions_1(p):
     """instructions : instructions instruction """
-    #print("insts")
     p[0] = AST.Node("instructions", [p[1], p[2]])
 
 
 def p_instructions_2(p):
     """instructions : instruction """
-    #print("instructions 2")
     p[0] = AST.Node("instruction", [p[1]])
 
 
 # shift/reduce conflicts are resolved as shifts, which is correct
 def p_instruction_expression(p):
     """instruction : instruction_simple ';' """
-    #print("instruction simple")
     p[0] = AST.Node("instruction_simple", [p[1]])
 
 
@@ -73,23 +67,23 @@ def p_instruction_if(p):
 
 def p_instruction_if_else(p):
     """instruction : IF '(' condition ')' instruction ELSE instruction"""
-    #print("here:", [p[3]], [p[5]], [p[7]])
     p[0] = AST.If_Else([p[3]], [p[5]], [p[7]])
 
 
 def p_instruction_for(p):
     """instruction : FOR id '=' expression ':' expression instruction"""
     p[0] = AST.For(p[2], p[4], p[6], [p[7]])
-    #p[0] = AST.Node("for", [p[2],])
 
 
 def p_instruction_while(p):
     """instruction : WHILE '(' condition ')' instruction"""
+    p[0] = AST.Node("while", [p[3], p[5]], p[1])
 
 
 def p_instruction_complex(p):
     """instruction : '{' instructions '}' """
     p[0] = AST.Node("complex_instructions", [p[2]])
+
 
 def p_assign(p):
     """instruction_simple : lvalue '=' expression
@@ -109,15 +103,15 @@ def p_key_phrases(p):
                    | PRINT expressions"""
     if 'print' in p:
         if '(' in p:
-            p[0] = AST.Node("print_instruction", [p[3]], p[2])
+            p[0] = AST.Node("print_instruction", [p[3]], p[1])
         else:
             p[0] = AST.Node("print_instruction", [p[2]], p[1])
-    if p[1] == 'return':
-        p[0] = AST.Node("return", [p[2]], p[1])
     else:
-        p[0] = AST.Node("key_phrase", value=p[1])
+        if p[1] == 'return':
+            p[0] = AST.Node("return", [p[2]], p[1])
+        else:
+            p[0] = AST.Node("key_phrase", value=p[1])
 
-#TODO dokończyć!!!
 
 def p_condition(p):
     """condition : expression LESS_EQUAL expression
@@ -158,7 +152,6 @@ def p_expression_lvalue(p):
     """ expression : lvalue
         lvalue : id
                | id_arr"""
-    #print("lval", p[1])
     p[0] = AST.Node("lvalue", [p[1]])
 
 
@@ -209,18 +202,17 @@ def p_matrices(p):
 
 
 def p_vectors(p):
-    """ vectors :  numerics ';' vectors
-                | numerics"""
-    #print("vectors")
+    """ vectors :  all_numbers ';' vectors
+                | all_numbers"""
     if ';' in p:
         p[0] = AST.Vectors("vectors", [p[1], p[3]], "VECTOR")
     else:
         p[0] = AST.Node("vectors", [p[1]], "VECTOR")
 
 
-def p_numerics(p):
-    """ numerics : numerics ',' int_number
-                | numerics ',' float
+def p_all_numbers(p):
+    """ all_numbers : all_numbers ',' int_number
+                | all_numbers ',' float
                 | int_number
                 | float"""
     if ',' in p:
@@ -228,30 +220,13 @@ def p_numerics(p):
     else:
         p[0] = AST.Node("numeric", [p[1]])
 
-#def p_numeric(p):
-#    """ numeric : id
-#               | float
-#               | int"""
 
-
-#tu jest shift reduce! dodanie ';' na końcu raz rozwiązało nie wiem czemu
 def p_expression_binary_operators(p):
     """ expression : expression '+' expression
                    | expression '-' expression
                    | expression '/' expression
                    | expression '*' expression """
     p[0] = AST.Node("bin_op", [p[1], p[3]], p[2])
-   # if p[2] == '+':
-   #     p[0] = p[1] + p[3]
-   # else:
-   #     if p[2] == '-':
-   #         p[0] = p[1] - p[3]
-   #     else:
-   #         if p[2] == '/':
-   #             p[0] = p[1] / p[3]
-   #         else:
-   #             if p[2] == '*':
-   #                 p[0] = p[1] * p[3]
 
 
 def p_dot_operators(p):
