@@ -1,5 +1,3 @@
-
-
 class Node(object):
     def __init__(self, type, children=None, value=None, indent=''):
         self.type = type
@@ -119,7 +117,6 @@ class For(Node):
         self.range_end = range_end
         self.range_end.add_indent()
         self.range_start.add_indent()
-
 
         if children:
             self.children = children

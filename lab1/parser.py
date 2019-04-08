@@ -12,7 +12,6 @@ if __name__ == '__main__':
         print("Cannot open {0} file".format(filename))
         sys.exit(0)
 
-
     parser = Mparser.parser
     text = file.read()
     parser.text = text

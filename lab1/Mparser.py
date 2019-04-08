@@ -13,7 +13,7 @@ precedence = (
     ('nonassoc', 'ID'),
     ('nonassoc', 'PRINT'),
     ('right', '=', 'ADDASSIGN', 'DIVASSIGN', 'SUBASSIGN', 'MULASSIGN'),
-    ('left', '<', '>', 'LESS_EQUAL','GREATER_EQUAL', 'NOT_EQUAL', 'EQUAL'),
+    ('left', '<', '>', 'LESS_EQUAL', 'GREATER_EQUAL', 'NOT_EQUAL', 'EQUAL'),
     ('left', '+', '-', 'DOTADD', 'DOTSUB'),
     ('left', '*', '/', 'DOTMUL', 'DOTDIV'),
     ('right', 'UMINUS'),
@@ -91,7 +91,7 @@ def p_assign(p):
                   | lvalue SUBASSIGN expression
                   | lvalue MULASSIGN expression
                   | lvalue DIVASSIGN expression """
-    p[0] = AST.Node("assign", [p[1],p[3]], p[2])
+    p[0] = AST.Node("assign", [p[1], p[3]], p[2])
 
 
 def p_key_phrases(p):
@@ -120,7 +120,7 @@ def p_condition(p):
                  | expression EQUAL expression
                  | expression '<' expression
                  | expression '>' expression"""
-    p[0] = AST.Node("condition", [p[1],p[3]], p[2])
+    p[0] = AST.Node("condition", [p[1], p[3]], p[2])
 
 
 def p_expressions(p):
