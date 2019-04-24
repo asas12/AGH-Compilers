@@ -1,44 +1,176 @@
+
+
 class Node(object):
-    def __init__(self, type, children=None, value=None, indent=''):
-        self.type = type
-        self.indent = indent
+    pass
+
+
+class Program(Node):
+    def __init__(self, instructions_opt):
+        self.instructions_opt = instructions_opt
+
+
+class InstructionsOpt(Node):
+    def __init__(self, instructions=None):
+        self.instructions = instructions
+
+
+class Instructions(Node):
+    def __init__(self, instruction, instructions=None):
+        self.instruction = instruction
+        self.instructions = instructions
+
+
+class Instruction(Node):
+    def __init__(self, instruction):
+        self.instruction = instruction
+
+
+class InstructionIf(Node):
+    def __init__(self, condition, instruction):
+        self.condition = condition
+        self.instruction = instruction
+
+
+class IntNum(Node):
+    def __init__(self, value):
         self.value = value
 
-        if children:
-            self.children = children
-            if value:
-                for child in children:
-                    child.add_indent()
-        else:
-            self.children = []
 
-    def __repr__(self):
-        if self.value is not None:
-            ret = str(self.indent) + str(self.value) + '\n'
+    def add_indent(self):
+        if not hasattr(self, 'indent'):
+            self.indent = ""
+        self.indent += '| '
 
-            if self.children:
-                for child in self.children:
-                    ret += str(child)
-            return ret
-        else:
-            ret = ""
-            if self.children:
-                for child in self.children:
-                    ret += str(child)
-            return ret
+    def remove_indent(self):
+        self.indent = self.indent[:-2]
+
+
+class InstructionIfElse(Node):
+    def __init__(self, condition, then_part, else_part):
+
+        self.condition = condition
+        self.then_part = then_part
+        self.else_part = else_part
 
     def add_indent(self):
         self.indent += '| '
-        for child in self.children:
+        for child in self.children_cond+self.children_then+self.children_else:
             child.add_indent()
 
     def remove_indent(self):
         self.indent = self.indent[:-2]
-        for child in self.children:
+        for child in self.children_cond+self.children_then+self.children_else:
             child.remove_indent()
 
 
+class For(Node):
+    def __init__(self, iterator, range_start, range_end, instruction):
+        self.iterator = iterator
+        self.range_start = range_start
+        self.range_end = range_end
+        self.instruction = instruction
+
+    def __repr__(self):
+        c = str(self.indent) + '| '
+        ret = str(self.indent) + 'FOR\n'+str(self.indent) + str(self.iterator)+c + \
+              'RANGE\n'+c+str(self.range_start)+c+str(self.range_end)
+
+        for child in self.children:
+            ret += str(child)
+        # children[-1] is the list of remaining vectors
+        return ret
+
+
+class While(Node):
+    def __init__(self, condition, instruction):
+        self.condition = condition
+        self.instruction = instruction
+
+
+class Assign(Node):
+    def __init__(self, left, op, right):
+        self.left = left
+        self.op = op
+        self.right = right
+
+
+class KeyPhrase(Node):
+    def __init__(self, word, argument=None):
+        self.word = word
+        self.argument = argument
+
+
+class Condition(Node):
+    def __init__(self, left, op, right):
+        self.left = left
+        self.op = op
+        self.right = right
+
+
+class Expressions(Node):
+    def __init__(self, expression, expressions=None):
+        self.expression = expression
+        self.expressions = expressions
+
+
+class NumericExpression(Node):
+    def __init__(self, number):
+        self.number = number
+
+
+class FloatNum(Node):
+    def __init__(self, value):
+        self.value = value
+
+
+class LValue(Node):
+    def __init__(self, value):
+        self.value = value
+
+
+class ID(Node):
+    def __init__(self, id):
+        self.id = id
+
+
+class ArrayIndex(Node):
+    def __init__(self, id, numbers):
+        self.id = id
+        self.numbers = numbers
+
+
+class IntNumbers(Node):
+    def __init__(self, number, numbers=None):
+        self.number = number
+        self.numbers = numbers
+
+
+class Number(Node):
+    def __init__(self, number):
+        self.number = number
+
+
+class MatrixExpression(Node):
+    def __init__(self, matrix):
+        self.matrix = matrix
+
+
+class Matrix(Node):
+    def __init__(self, elements):
+        self.elements = elements
+
+
+class Matrices(Node):
+    def __init__(self, matrix, matrices=None):
+        self.matrix = matrix
+        self.matrices = matrices
+
+
 class Vectors(Node):
+    def __init__(self, vector, vectors=None):
+        self.vector = vector
+        self.vectors = vectors
+
     def __repr__(self):
         if self.value is not None:
             ret = str(self.indent) + str(self.value) + '\n'
@@ -54,83 +186,46 @@ class Vectors(Node):
             return "ERROR"
 
 
-class If_Else(Node):
-    def __init__(self, children_cond=None, children_then=None, children_else=None, indent=''):
-        self.indent = indent
-
-        if children_cond:
-            self.children_cond = children_cond
-            for child in children_cond:
-                    # child.indent += self.indent + '|'
-                    child.add_indent()
-        else:
-            self.children_cond = []
-
-        if children_then:
-            self.children_then = children_then
-            for child in children_then:
-                    # child.indent += self.indent + '|'
-                    child.add_indent()
-        else:
-            self.children_then = []
-
-        if children_else:
-            self.children_else = children_else
-            for child in children_else:
-                # child.indent += self.indent + '|'
-                child.add_indent()
-        else:
-            self.children_else = []
-
-    def add_indent(self):
-        self.indent += '| '
-        for child in self.children_cond+self.children_then+self.children_else:
-            child.add_indent()
-
-    def remove_indent(self):
-        self.indent = self.indent[:-2]
-        for child in self.children_cond+self.children_then+self.children_else:
-            child.remove_indent()
-
-    def __repr__(self):
-        ret = str(self.indent) + 'IF\n'
-        for child in self.children_cond:
-            ret += str(child)
-
-        ret += str(self.indent) + 'THEN\n'
-        for child in self.children_then:
-            ret += str(child)
-
-        ret += str(self.indent) + 'ELSE\n'
-        for child in self.children_else:
-            ret += str(child)
-        # children[-1] is the list of remaining vectors
-        return ret
+class AllNumbers(Node):
+    def __init__(self, number, numbers=None):
+        self.number = number
+        self.numbers = numbers
 
 
-class For(Node):
-    def __init__(self, iterator=None, range_start=None, range_end=None, children=None, indent=''):
-        self.indent = indent
-        self.iterator = iterator
-        iterator.add_indent()
-        self.range_start = range_start
-        self.range_end = range_end
-        self.range_end.add_indent()
-        self.range_start.add_indent()
+class BinOp(Node):
+    def __init__(self, left, op, right):
+        self.left = left
+        self.op = op
+        self.right = right
 
-        if children:
-            self.children = children
-            for child in children:
-                child.add_indent()
-        else:
-            self.children = []
 
-    def __repr__(self):
-        c = str(self.indent) + '| '
-        ret = str(self.indent) + 'FOR\n'+str(self.indent) + str(self.iterator)+c + \
-              'RANGE\n'+c+str(self.range_start)+c+str(self.range_end)
+class DotOp(Node):
+    def __init__(self, left, op, right):
+        self.left = left
+        self.op = op
+        self.right = right
 
-        for child in self.children:
-            ret += str(child)
-        # children[-1] is the list of remaining vectors
-        return ret
+
+class Transpose(Node):
+    def __init__(self, expression):
+        self.expression = expression
+
+
+class Negation(Node):
+    def __init__(self, expression):
+        self.expression = expression
+
+
+class String(Node):
+    def __init__(self, string):
+        self.string = string
+
+
+class Function(Node):
+    def __init__(self, function, argument):
+        self.function = function
+        self.argument = argument
+
+class Error(Node):
+    def __init__(self):
+        pass

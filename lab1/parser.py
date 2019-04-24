@@ -1,6 +1,8 @@
 import sys
 from lexer import scanner
 import Mparser
+from TreePrinter import TreePrinter
+
 
 if __name__ == '__main__':
 
@@ -16,4 +18,5 @@ if __name__ == '__main__':
     text = file.read()
     parser.text = text
     p = parser.parse(text, lexer=scanner.lexer)
-    print(p)
+    #print(p)
+    p.printTree()
