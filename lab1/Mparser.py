@@ -167,10 +167,10 @@ def p_expression_array_index(p):
 
 # contains int numbers and ids - used for indexing
 def p_int_numbers(p):
-    """ int_numbers : int_numbers ',' int_number
+    """ int_numbers : int_number ',' int_numbers
                 | int_number"""
     if ',' in p:
-        p[0] = AST.IntNumbers(p[3], p[1])
+        p[0] = AST.IntNumbers(p[1], p[3])
     else:
         p[0] = AST.IntNumbers(p[1])
 
@@ -253,9 +253,9 @@ def p_string(p):
 
 
 def p_functions(p):
-    """ expression : ZEROS '(' expression ')'
-                   | ONES '(' expression ')'
-                   | EYE '(' expression ')'"""
+    """ expression : ZEROS '(' int_numbers ')'
+                   | ONES '(' int_numbers ')'
+                   | EYE '(' int_numbers ')'"""
     p[0] = AST.Function(p[1], p[3])
 
 

@@ -2,7 +2,7 @@ import sys
 from lexer import scanner
 import Mparser
 from TreePrinter import TreePrinter
-
+from TypeChecker import TypeChecker
 
 if __name__ == '__main__':
 
@@ -17,6 +17,12 @@ if __name__ == '__main__':
     parser = Mparser.parser
     text = file.read()
     parser.text = text
-    p = parser.parse(text, lexer=scanner.lexer)
+    ast = parser.parse(text, lexer=scanner.lexer)
     #print(p)
-    p.printTree()
+    ast.printTree()
+
+    # Below code shows how to use visitor
+    typeChecker = TypeChecker()
+    typeChecker.visit(ast)
+    typeChecker.get_symbol_table().show()
+    # or alternatively ast.accept(typeChecker)

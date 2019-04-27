@@ -5,7 +5,7 @@ import AST
 def addToClass(cls):
 
     def decorator(func):
-        setattr(cls,func.__name__,func)
+        setattr(cls, func.__name__, func)
         return func
     return decorator
 
@@ -137,7 +137,7 @@ class TreePrinter:
         print_with_indent('VECTOR', indent)
         self.vector.printTree(indent+1)
         if self.vectors is not None:
-            self.vectors.printTree(indent+1)
+            self.vectors.printTree(indent)
 
     @addToClass(AST.AllNumbers)
     def printTree(self, indent=0):

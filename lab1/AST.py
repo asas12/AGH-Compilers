@@ -31,20 +31,6 @@ class InstructionIf(Node):
         self.instruction = instruction
 
 
-class IntNum(Node):
-    def __init__(self, value):
-        self.value = value
-
-
-    def add_indent(self):
-        if not hasattr(self, 'indent'):
-            self.indent = ""
-        self.indent += '| '
-
-    def remove_indent(self):
-        self.indent = self.indent[:-2]
-
-
 class InstructionIfElse(Node):
     def __init__(self, condition, then_part, else_part):
 
@@ -116,6 +102,20 @@ class Expressions(Node):
 class NumericExpression(Node):
     def __init__(self, number):
         self.number = number
+
+
+class IntNum(Node):
+    def __init__(self, value):
+        self.value = value
+
+
+    def add_indent(self):
+        if not hasattr(self, 'indent'):
+            self.indent = ""
+        self.indent += '| '
+
+    def remove_indent(self):
+        self.indent = self.indent[:-2]
 
 
 class FloatNum(Node):
@@ -222,6 +222,7 @@ class String(Node):
 
 
 class Function(Node):
+    # zeros, ones, eye
     def __init__(self, function, argument):
         self.function = function
         self.argument = argument
