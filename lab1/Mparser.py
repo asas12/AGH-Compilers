@@ -91,7 +91,7 @@ def p_assign(p):
                   | lvalue SUBASSIGN expression
                   | lvalue MULASSIGN expression
                   | lvalue DIVASSIGN expression """
-    p[0] = AST.Assign(p[1], p[2], p[3])
+    p[0] = AST.Assign(p[1], p[2], p[3], p.lineno(2))
 
 
 def p_key_phrases(p):
@@ -103,14 +103,14 @@ def p_key_phrases(p):
                    | PRINT expressions"""
     if 'print' in p:
         if '(' in p:
-            p[0] = AST.KeyPhrase(p[1], p[3])
+            p[0] = AST.KeyPhrase(p[1], p.lineno(1), p[3])
         else:
-            p[0] = AST.KeyPhrase(p[1], p[2])
+            p[0] = AST.KeyPhrase(p[1], p.lineno(1), p[2])
     else:
         if p[1] == 'return':
-            p[0] = AST.KeyPhrase(p[1], p[2])
+            p[0] = AST.KeyPhrase(p[1], p.lineno(1), p[2])
         else:
-            p[0] = AST.KeyPhrase(p[1])
+            p[0] = AST.KeyPhrase(p[1], p.lineno(1))
 
 
 def p_condition(p):
@@ -157,12 +157,12 @@ def p_expression_lvalue(p):
 
 def p_expression_id(p):
     """ id : ID """
-    p[0] = AST.ID(p[1])
+    p[0] = AST.ID(p[1], p.lineno(1))
 
 
 def p_expression_array_index(p):
     """id_arr : id '[' int_numbers ']' """
-    p[0] = AST.ArrayIndex(p[1], p[3])
+    p[0] = AST.ArrayIndex(p[1], p[3], p.lineno(2))
 
 
 # contains int numbers and ids - used for indexing
@@ -189,7 +189,7 @@ def p_matrix_expression(p):
 def p_matrix(p):
     """matrix : '['  matrices ']'
                   | '[' vectors ']' """
-    p[0] = AST.Matrix(p[2])
+    p[0] = AST.Matrix(p[2], p.lineno(1))
 
 
 def p_matrices(p):
@@ -226,7 +226,7 @@ def p_expression_binary_operators(p):
                    | expression '-' expression
                    | expression '/' expression
                    | expression '*' expression """
-    p[0] = AST.BinOp(p[1], p[2], p[3])
+    p[0] = AST.BinOp(p[1], p[2], p[3], p.lineno(2))
 
 
 def p_dot_operators(p):
@@ -234,7 +234,7 @@ def p_dot_operators(p):
                   | expression DOTSUB expression
                   | expression DOTMUL expression
                   | expression DOTDIV expression"""
-    p[0] = AST.DotOp(p[1], p[2], p[3])
+    p[0] = AST.DotOp(p[1], p[2], p[3], p.lineno(2))
 
 
 def p_transpose(p):

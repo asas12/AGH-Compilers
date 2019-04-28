@@ -17,25 +17,27 @@ class VariableSymbol(Symbol):
         super().__init__(name)
         self.type = type
 
-
     def __repr__(self):
-        return "Var Sym "+str(self.name)+", type "+str(self.type)
+        return "VarSym "+str(self.name)+", type "+str(self.type)
 
 
-class ArraySymbol(Symbol):
+class ArraySymbol(VariableSymbol):
 
-    def __init__(self, name, size):
-        super().__init__(name)
+    def __init__(self, name, dimensions):
+        super().__init__(name, 'array')
 
         # list of sizes in dimensions?
-        self.size = size
+        self.dimensions = dimensions
+
+    def __repr__(self):
+        return "ArraySymbol "+str(self.name)+", sized "+str(self.dimensions)
+
 
 class FunctionSymbol(Symbol):
 
     def __init__(self, name, args):
         super().__init__(name)
         self.args = args
-
 
 
 class SymbolTable(object):
@@ -54,11 +56,12 @@ class SymbolTable(object):
         if name in self.table:
             return self.table[name]
         else:
+            #print("NO ", name)
             return None
     #
 
     def getParentScope(self):
-        pass
+        return self.parent
     #
 
     def pushScope(self, name):

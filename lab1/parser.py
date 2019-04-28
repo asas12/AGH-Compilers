@@ -25,4 +25,5 @@ if __name__ == '__main__':
     typeChecker = TypeChecker()
     typeChecker.visit(ast)
     typeChecker.get_symbol_table().show()
+    #print(typeChecker.a)
     # or alternatively ast.accept(typeChecker)

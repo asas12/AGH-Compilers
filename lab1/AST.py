@@ -74,15 +74,17 @@ class While(Node):
 
 
 class Assign(Node):
-    def __init__(self, left, op, right):
+    def __init__(self, left, op, right, line):
         self.left = left
         self.op = op
         self.right = right
+        self.line = line
 
 
 class KeyPhrase(Node):
-    def __init__(self, word, argument=None):
+    def __init__(self, word, line, argument=None):
         self.word = word
+        self.line = line
         self.argument = argument
 
 
@@ -129,14 +131,16 @@ class LValue(Node):
 
 
 class ID(Node):
-    def __init__(self, id):
+    def __init__(self, id, line):
         self.id = id
+        self.line = line
 
 
 class ArrayIndex(Node):
-    def __init__(self, id, numbers):
+    def __init__(self, id, numbers, line):
         self.id = id
         self.numbers = numbers
+        self.line = line
 
 
 class IntNumbers(Node):
@@ -156,8 +160,9 @@ class MatrixExpression(Node):
 
 
 class Matrix(Node):
-    def __init__(self, elements):
+    def __init__(self, elements, line):
         self.elements = elements
+        self.line = line
 
 
 class Matrices(Node):
@@ -193,17 +198,19 @@ class AllNumbers(Node):
 
 
 class BinOp(Node):
-    def __init__(self, left, op, right):
+    def __init__(self, left, op, right, line):
         self.left = left
         self.op = op
         self.right = right
+        self.line = line
 
 
 class DotOp(Node):
-    def __init__(self, left, op, right):
+    def __init__(self, left, op, right, line):
         self.left = left
         self.op = op
         self.right = right
+        self.line = line
 
 
 class Transpose(Node):
